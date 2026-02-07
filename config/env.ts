@@ -1,0 +1,3 @@
+export const env={
+    BASEURL : process.env.BASEURL
+}
