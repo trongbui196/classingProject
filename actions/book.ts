@@ -5,12 +5,17 @@ export class BookActions {
     getAllBooks(){
         return this.apiClient.get('/BookStore/v1/Books')
     }
-    getABook(isbn:string){
-        return this.apiClient.get(`/BookStore/v1/Book?ISBN=${isbn}`)
+    getABook(isbn:string,token:string){
+        return this.apiClient.get(`/BookStore/v1/Book?ISBN=${isbn}`,{
+            headers:{
+                Authorization:`Bearer ${token}`}
+        })
     }
-    addBooktoUser(userId:string,isbn:Record<string,string>[])
+    addBooktoUser(userId:string,isbn:Record<string,string>[],token:string)
     {
         return this.apiClient.post('/BookStore/v1/Books',{
+             headers:{
+                Authorization:`Bearer ${token}`},
             data:{
                 userId,
                 collectionOfIsbns:isbn
@@ -30,9 +35,11 @@ export class BookActions {
     {
         return this.apiClient.delete(`/BookStore/v1/Books/${userId}`)
     }
-    updateBooks(PathISBN:string,userId:string,isbn:string)
+    updateBooks(PathISBN:string,userId:string,isbn:string,token:string)
     {
         return this.apiClient.update(`/BookStore/v1/Books/${PathISBN}`,{
+            headers:{
+                Authorization:`Bearer ${token}`},
             data:{
                 userId,
                 isbn

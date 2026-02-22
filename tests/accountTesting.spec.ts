@@ -38,7 +38,6 @@ test.describe.serial("Account Tests",async ()=>{
     })
     test('Authorized = false',async()=>{
         const username=testContext.username!;
-        
         const password=env.Password!
         console.log('username',username,password);
         const res=await container.account.getAuthorized(username,password);
@@ -62,8 +61,7 @@ test.describe.serial("Account Tests",async ()=>{
         expect(res.status()).toBe(200);
         expect((await res.json()).token).toBeDefined();
         expect((await res.json()).result).toBe("User authorized successfully.");
-        testContext.token=(await res.json()).token;
-        
+        testContext.token=(await res.json()).token;  
     })
     test('Authorized = true',async()=>{
         const username=testContext.username!;
@@ -79,7 +77,6 @@ test.describe.serial("Account Tests",async ()=>{
         console.log('Get user Info - userId',userId,token);
         const res=await container.account.getUser(userId,token)
         console.log('Get user Info',await res.json());
-
         expect(res.status()).toBe(200);
         expect((await res.json()).username).toBe(testContext.username);
         expect((await res.json()).userId).toBe(userId);
