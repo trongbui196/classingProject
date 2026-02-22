@@ -3,7 +3,7 @@ import {validateSchema} from '../helpers/schemaValidate'
 import {Container} from "../core/containter";
 import * as schema from '../data/schemas/book.schema';
 import { env } from '../config/env';
-test.describe('Book Tests',async()=>{
+test.describe.serial('Book Tests',async()=>{
     let container:Container;
     let bookisbn:string='9781449325862'
     let token:string
@@ -11,13 +11,18 @@ test.describe('Book Tests',async()=>{
     test.beforeEach(async({request})=>{
         container=new Container(request)
     })
-    test.beforeAll(async()=>{
+    test.beforeAll(async({request})=>{
         const username=env.Username!
         const password=env.Password!
+        container=new Container(request);
         const res=await container.account.generateToken(username,password);
         const body=await res.json();
         expect(body.status).toBe("Success");
         token=body.token;
+        console.log('token',token)
+        const res2=await container.account.getAuthorized(username,password)
+        const body2=await res2.json();
+        expect (body2).toBe(true)
     })
     test(`Get all books`,async()=>{
        const res=await container.book.getAllBooks();
@@ -32,9 +37,9 @@ test.describe('Book Tests',async()=>{
     test('Get a book',async()=>{
         const res=await container.book.getABook(bookisbn,token);
         const body=await res.json();
-        const result=validateSchema(schema.getABookSchema,body)
+       const result=validateSchema(schema.getABookSchema,body)
         expect(result.valid).toBe(true)
-        expect(body).toBe({
+        expect(body).toStrictEqual({
   "isbn": "9781449325862",
   "title": "Git Pocket Guide",
   "subTitle": "A Working Introduction",
@@ -52,8 +57,10 @@ test.describe('Book Tests',async()=>{
         {
             listofisbn.push({isbn:i})
         }
+        console.log('list of isbn',listofisbn)
         const res=await container.book.addBooktoUser(env.UserId!,listofisbn,token);
         const body=await res.json();
+        console.log('123',body)
         expect(body.books.length).toBe(listofbooks.length)
         body.books.forEach((book:any)=>{
             expect(listofbooks).toContain(book.isbn)
@@ -66,5 +73,10 @@ test.describe('Book Tests',async()=>{
         body.books.forEach((book:any)=>{
             expect(listofbooks).not.toContain(book.isbn)
         })
+    })
+    test('Delete all books',async()=>{
+        const res=await container.book.deleteAllBooks(env.UserId!);
+        const body=await res.json();
+        expect(body.books.length).toBe(0)
     })
 })

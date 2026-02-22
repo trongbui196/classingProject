@@ -2,7 +2,7 @@ export const getAllBookSchema = {
     type:"object",
     required:["books"],
     properties:{
-        book:{
+        books:{
             type:"array",
             items:{
                 type:"object",
@@ -12,7 +12,7 @@ export const getAllBookSchema = {
                     title:{type:"string"},
                     subTitle:{type:"string"},
                     author:{type:"string"},
-                    publish_date:{type:"string", format:"date-time"},
+                    publish_date:{type:"string"},
                     publisher:{type:"string"},
                     pages:{type:"integer"},
                     description:{type:"string"},
@@ -30,7 +30,7 @@ export const getABookSchema={
                     title:{type:"string"},
                     subTitle:{type:"string"},
                     author:{type:"string"},
-                    publish_date:{type:"string", format:"date-time"},
+                    publish_date:{type:"string"},
                     publisher:{type:"string"},
                     pages:{type:"integer"},
                     description:{type:"string"},
@@ -50,7 +50,7 @@ export const updateBookSchema={
                     title:{type:"string"},
                     subTitle:{type:"string"},
                     author:{type:"string"},
-                    publish_date:{type:"string", format:"date-time"},
+                    publish_date:{type:"string"},
                     publisher:{type:"string"},
                     pages:{type:"integer"},
                     description:{type:"string"},
