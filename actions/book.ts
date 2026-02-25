@@ -22,18 +22,27 @@ export class BookActions {
             }
         })
     }
-    deleteABook(userId:string,isbn:string)
+    deleteABook(userId:string,isbn:string,token:string)
     {
         return this.apiClient.delete('/BookStore/v1/Book',{
+            headers:{
+                Authorization:`Bearer ${token}`},
+            
             data:{
                 userId,
                 isbn
             }
         })
     }
-    deleteAllBooks(userId:string)
+    deleteAllBooks(userId:string,token:string
+    )
     {
-        return this.apiClient.delete(`/BookStore/v1/Books/${userId}`)
+        return this.apiClient.delete(`/BookStore/v1/Books?UserId=${userId}`,
+            {
+                headers:{
+                    Authorization:`Bearer ${token}`},
+            }
+        )
     }
     updateBooks(PathISBN:string,userId:string,isbn:string,token:string)
     {

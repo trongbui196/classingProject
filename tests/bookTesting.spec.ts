@@ -8,18 +8,20 @@ test.describe.serial('Book Tests',async()=>{
     let bookisbn:string='9781449325862'
     let token:string
     let listofbooks:string[]=[]
+    const username=env.Username!
+    const password=env.Password!
+    const userId=env.UserId!
     test.beforeEach(async({request})=>{
         container=new Container(request)
     })
     test.beforeAll(async({request})=>{
-        const username=env.Username!
-        const password=env.Password!
+    
         container=new Container(request);
         const res=await container.account.generateToken(username,password);
         const body=await res.json();
         expect(body.status).toBe("Success");
         token=body.token;
-        console.log('token',token)
+        console.log(`login with ${username} and ${password}: `,token)
         const res2=await container.account.getAuthorized(username,password)
         const body2=await res2.json();
         expect (body2).toBe(true)
@@ -51,32 +53,39 @@ test.describe.serial('Book Tests',async()=>{
   "website": "http://chimera.labs.oreilly.com/books/1230000000561/index.html"
 })
     })
-    test('Add a book to user',async()=>{
+    test('Add books to user',async()=>{
         let listofisbn:Record<string,string>[]=[]
         for (const i of listofbooks)
         {
             listofisbn.push({isbn:i})
         }
-        console.log('list of isbn',listofisbn)
-        const res=await container.book.addBooktoUser(env.UserId!,listofisbn,token);
+       // console.log('list of isbn',listofisbn)
+        const res=await container.book.addBooktoUser(userId,listofisbn,token);
         const body=await res.json();
-        console.log('123',body)
+       // console.log('123',body)
         expect(body.books.length).toBe(listofbooks.length)
         body.books.forEach((book:any)=>{
             expect(listofbooks).toContain(book.isbn)
         })
+        bookisbn=body.books[0].isbn
     })
     test('Delete a book',async()=>{
-        const res=await container.book.deleteABook(env.UserId!,bookisbn);
-        const body=await res.json();
-        expect(body.books.length).toBe(listofbooks.length-1)
-        body.books.forEach((book:any)=>{
-            expect(listofbooks).not.toContain(book.isbn)
+        const res=await container.book.deleteABook(userId,bookisbn,token);
+        // const body=await res.json();
+        // console.log('delete a book',body)
+        // expect(body.books.length).toBe(listofbooks.length-1)
+        expect(res.status()).toBe(204)
+        const res1=await container.account.getUser(userId,token);
+        const body1=await res1.json();
+        body1.books.forEach((book:any)=>{
+            expect(book.isbn).not.toBe(bookisbn)
         })
     })
     test('Delete all books',async()=>{
-        const res=await container.book.deleteAllBooks(env.UserId!);
-        const body=await res.json();
-        expect(body.books.length).toBe(0)
+        const res=await container.book.deleteAllBooks(userId,token);
+        expect(res.status()).toBe(204)
+        const res1=await container.account.getUser(userId,token);
+        const body1=await res1.json();
+        expect(body1.books.length).toBe(0)
     })
 })
