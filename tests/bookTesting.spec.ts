@@ -67,4 +67,9 @@ test.describe('Book Tests',async()=>{
             expect(listofbooks).not.toContain(book.isbn)
         })
     })
+    test('Delete all books',async()=>{
+        const res=await container.book.deleteAllBooks(env.UserId!);
+        const body=await res.json();
+        expect(body.books.length).toBe(0)
+    })
 })
